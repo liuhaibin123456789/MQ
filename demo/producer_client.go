@@ -5,7 +5,7 @@ package main
 */
 
 import (
-	"MQ/demo/proto"
+	"MQ/demo/broker/proto"
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
@@ -20,7 +20,7 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := __.NewBrokerClient(conn)
+	c := __.__.NewBrokerClient(conn)
 
 	//生产者:每隔1秒，生成10条消息
 	t := time.NewTicker(time.Second)

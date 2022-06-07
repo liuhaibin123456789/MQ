@@ -1,7 +1,7 @@
 package broker
 
 import (
-	"MQ/demo/proto"
+	"MQ/demo/broker/proto"
 	"container/list"
 	"context"
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 
 type brokerService struct {
 	//内嵌接口，保证方法实现
-	__.BrokerServer
+	__.__
 
 	//内嵌锁，实现并发控制
 	brokerLock sync.RWMutex

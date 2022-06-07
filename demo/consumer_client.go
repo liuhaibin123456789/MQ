@@ -1,7 +1,7 @@
 package main
 
 import (
-	"MQ/demo/proto"
+	"MQ/demo/broker/proto"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -21,7 +21,7 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := __.NewBrokerClient(conn)
+	c := __.__.NewBrokerClient(conn)
 
 	//延时5秒，之后再每隔2秒消费消息
 	time.Sleep(time.Second * 5)
