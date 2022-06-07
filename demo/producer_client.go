@@ -5,7 +5,7 @@ package main
 */
 
 import (
-	"MQ/demo/broker/proto"
+	"MQ/demo/proto"
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
@@ -20,7 +20,7 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := __.__.NewBrokerClient(conn)
+	c := proto.NewBrokerClient(conn)
 
 	//生产者:每隔1秒，生成10条消息
 	t := time.NewTicker(time.Second)
@@ -29,7 +29,7 @@ func main() {
 		select {
 		case <-t.C:
 			fmt.Println("生产者生成消息数:", id)
-			_, err := c.Process(context.Background(), &__.Msg{
+			_, err := c.Process(context.Background(), &proto.Msg{
 				Id:         id,
 				Topic:      "winter",
 				MsgType:    1,
