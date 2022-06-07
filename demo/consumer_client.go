@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "MQ/demo/broker/proto"
+	"MQ/demo/proto"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -21,7 +21,7 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewBrokerClient(conn)
+	c := __.NewBrokerClient(conn)
 
 	//延时5秒，之后再每隔2秒消费消息
 	time.Sleep(time.Second * 5)
@@ -30,16 +30,16 @@ func main() {
 	for {
 		select {
 		case <-t.C:
-			response, err := c.Process(context.Background(), &pb.Msg{
+			response, err := c.Process(context.Background(), &__.Msg{
 				MsgType: 2, //消费者从远程rpc服务端拉取消息
 			})
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
-			msg := new(pb.Msg)
+			msg := new(__.Msg)
 			//还原出结构体,找出id
-			err = json.Unmarshal(response.O.(*pb.Response_Data).Data, msg)
+			err = json.Unmarshal(response.O.(*__.Response_Data).Data, msg)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -47,7 +47,7 @@ func main() {
 			//消费
 			fmt.Println("消费者消费信息：", msg)
 
-			_, err = c.Process(context.Background(), &pb.Msg{
+			_, err = c.Process(context.Background(), &__.Msg{
 				Id:      msg.Id,
 				MsgType: 3, //ack
 			})

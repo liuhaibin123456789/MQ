@@ -1,7 +1,7 @@
 package broker
 
 import (
-	pb "MQ/demo/broker/proto"
+	"MQ/demo/proto"
 	"container/list"
 	"context"
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 
 type brokerService struct {
 	//内嵌接口，保证方法实现
-	pb.BrokerServer
+	__.BrokerServer
 
 	//内嵌锁，实现并发控制
 	brokerLock sync.RWMutex
@@ -31,8 +31,8 @@ type brokerService struct {
 var en *list.Element
 
 // Process broker处理消息收发服务：将收到的消息暂存至队列里（消息堆积只提供一个50容量队列）生产者与消费者何时
-func (s *brokerService) Process(context context.Context, msg *pb.Msg) (res *pb.Response, err error) {
-	res = new(pb.Response)
+func (s *brokerService) Process(context context.Context, msg *__.Msg) (res *__.Response, err error) {
+	res = new(__.Response)
 
 	//初始化队列
 	s.len = s.msgList.Len()
@@ -49,7 +49,7 @@ func (s *brokerService) Process(context context.Context, msg *pb.Msg) (res *pb.R
 		s.len = s.msgList.Len()
 		fmt.Println(msg)
 		res.Ok = true
-		res.O = &pb.Response_Data{Data: []byte("消息成功放入消息队列")}
+		res.O = &__.Response_Data{Data: []byte("消息成功放入消息队列")}
 
 	//消费者消费消息
 	case 2:
@@ -72,7 +72,7 @@ func (s *brokerService) Process(context context.Context, msg *pb.Msg) (res *pb.R
 			return
 		}
 
-		res.O = &pb.Response_Data{Data: bytes}
+		res.O = &__.Response_Data{Data: bytes}
 		return
 
 	//ack删除
@@ -80,14 +80,14 @@ func (s *brokerService) Process(context context.Context, msg *pb.Msg) (res *pb.R
 		s.brokerLock.Lock()
 		//消费者确认消费到消息后，再将消息的某个id发送过来，同时消息的类型标记为3
 		for e := s.msgList.Front(); e != nil; e = e.Next() {
-			if e.Value.(*pb.Msg).Id == msg.Id {
+			if e.Value.(*__.Msg).Id == msg.Id {
 				s.msgList.Remove(e)
 				s.len = s.msgList.Len()
 				break
 			}
 		}
 		res.Ok = true
-		res.O = &pb.Response_Data{Data: []byte("ack删除成功")}
+		res.O = &__.Response_Data{Data: []byte("ack删除成功")}
 		s.brokerLock.Unlock()
 	default:
 		err = errors.New("the message type is wrong")
@@ -96,7 +96,7 @@ func (s *brokerService) Process(context context.Context, msg *pb.Msg) (res *pb.R
 }
 
 func toBytes(msg interface{}) (msgString []byte, err error) {
-	m := msg.(*pb.Msg)
+	m := msg.(*__.Msg)
 	msgString, err = json.Marshal(m)
 	return
 }
@@ -110,7 +110,7 @@ func main() {
 
 	s := grpc.NewServer()
 
-	pb.RegisterBrokerServer(s, &brokerService{msgList: list.New()})
+	__.RegisterBrokerServer(s, &brokerService{msgList: list.New()})
 
 	if err := s.Serve(conn); err != nil {
 		log.Fatalf("failed to serve: %v", err)
